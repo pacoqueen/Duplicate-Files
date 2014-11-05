@@ -1,14 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """Find duplicate files inside a directory tree."""
 
 from os import walk, remove, stat
 from os.path import join as joinpath
 from md5 import md5
 
-def find_duplicates( rootdir ):
+def filter_name(fname):
+    """Elimina "(1)" y la extensión del nombre recibido.
+    Por ejemplo: 01 High Decibels (1).mp3 --> 01 High Decibels"""
+    res = "".join(fname.replace(" (1)", "").split(".")[:-1])
+    print res
+    return res
+
+def find_duplicates(rootdir):
     """Find duplicate files in directory tree."""
     filesizes = {}
     # Build up dict with key as filesize and value is list of filenames.
-    for path, dirs, files in walk( rootdir ):
+    for path, dirs, files in walk(rootdir):
         for filename in files:
             filepath = joinpath( path, filename )
             filesize = stat( filepath ).st_size
@@ -18,8 +28,9 @@ def find_duplicates( rootdir ):
     # We are only interested in lists with more than one entry.
     for files in [ flist for flist in filesizes.values() if len(flist)>1 ]:
         for filepath in files:
-            with open( filepath ) as openfile:
-                filehash = md5( openfile.read() ).hexdigest()
+            #with open( filepath ) as openfile:
+            #    filehash = md5( openfile.read() ).hexdigest()
+            filehash = filter_name(filepath)
             if filehash not in unique:
                 unique.add( filehash )
             else:

@@ -7,6 +7,7 @@ import threading
 import Queue
 import time
 import sys
+from DuplicateFiles import filter_name
 
 class Scanner(threading.Thread):
     def __init__(self, path, queue, finished_scan):
@@ -32,8 +33,9 @@ class Scanner(threading.Thread):
             #run over all files in dir with the same size if there is more then one
             duplicates = {}
             for filepath in files:
-                with open( filepath ) as openfile:
-                    filehash = md5( openfile.read() ).hexdigest()
+                #with open( filepath ) as openfile:
+                #    filehash = md5( openfile.read() ).hexdigest()
+                filehash = filter_name(filepath)
                 if filehash not in duplicates:
                     duplicates.setdefault(filehash, []).append (filepath)
                 else:
